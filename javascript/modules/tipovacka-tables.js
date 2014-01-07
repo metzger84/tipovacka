@@ -31,15 +31,20 @@ define( [ 'tipovacka-match' ], function( TipovackaMatch ) {
 					that.renderTable();
 				}
 			});
+		},
 
-			$(document).on( 'extraTime', function( e ) {
-				that.awardPoints( e.message );
-			});
+		updateChkboxStateInPool: function( e ) {
+
 		},
 
 		insertMatchIntoPool: function( e ) {
+			var poolChkbox, msgChkbox;
+
 			for ( var i = 0; i < this.pool.length; i++ ) {
-				if ( this.pool[i].id === e.message.id ) return false;
+				if ( this.pool[i].id === e.message.id ) {
+					if ( this.pool[i].chkbox !== e.message.chkbox ) this.pool[i].chkbox = !this.pool[i].chkbox;
+					return false;
+				}
 			}
 			this.pool.push( e.message );
 		},
@@ -117,29 +122,46 @@ define( [ 'tipovacka-match' ], function( TipovackaMatch ) {
 					} else {
 						give = 0; get = 1;
 					}
-					this.addScoreToCache( this.pool[i].target[j].code, this.pool[i].score[give], this.pool[i].score[get] );
+					this.addScoreToCache( this.pool[i].target[j].code, this.pool[i].score[give], this.pool[i].score[get], this.pool[i].chkbox );
 				}
 			}
 			this.updateScoreFromCache();
 		},
 
-		addScoreToCache: function( target, give, get ) {
+		addScoreToCache: function( target, give, get, chkbox ) {
+			var win, loss, winstime, losstime;
+			win = loss = winstime = losstime = 0;
+
+			if ( chkbox ) {
+				winstime = ( give > get ) ? 1 : 0;
+				losstime = ( give < get ) ? 1 : 0;
+			} else {
+				win = ( give > get ) ? 1 : 0;
+				loss = ( give < get ) ? 1 : 0;
+			} 
+
 			if ( !this.cache[ target ] ) {
-				this.cache[ target ] = [ give, get ];
+				this.cache[ target ] = [ give, get, win, loss, winstime, losstime ];
 			} else {
 				this.cache[ target ][0] += give;
 				this.cache[ target ][1] += get;
+				this.cache[ target ][2] += win;
+				this.cache[ target ][3] += loss;
+				this.cache[ target ][4] += winstime;
+				this.cache[ target ][5] += losstime;
 			}
 		},
 
 		updateScoreFromCache: function() {
-			console.log('start', this.cache, this.data );
 			for ( var prop in this.cache ) {
 				for ( var i = 0; i < this.data.length; i++ ) {
 					if ( this.data[i].code == prop ) {
-						console.log(true, this.data[i], this.cache[prop]);
 						this.data[i].score.give = this.cache[ prop ][0];
 						this.data[i].score.get = this.cache[ prop ][1];
+						this.data[i].wins = this.cache[ prop ][2];
+						this.data[i].loss = this.cache[ prop ][3];
+						this.data[i].winstime = this.cache[ prop ][4];
+						this.data[i].losstime = this.cache[ prop ][5];
 					}
 				}
 			}
