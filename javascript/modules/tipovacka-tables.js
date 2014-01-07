@@ -62,17 +62,15 @@ define( [ 'tipovacka-match' ], function( TipovackaMatch ) {
 
 		calculatePoints: function( player, opponent, chkbox ) {
 			var points;
-			var basePoint = ( chkbox ) ? 2 : 3;
+			var basePoint = ( chkbox ) ? [ 2, 1 ] : [ 3, 0 ];
 
-			if ( player > opponent ) {
-				points = [ basePoint, 0 ];
-			} else if ( player < opponent ) {
-				points = [ 0, basePoint ];
+			if ( player < opponent ) {
+				basePoint.reverse();
 			} else if ( player === opponent ) {
-				points = [ 0, 0 ];
+				basePoint = [ 0, 0 ];
 			}
 
-			return points;
+			return basePoint;
 		},
 
 		awardPoints: function( origin ) {
@@ -82,7 +80,7 @@ define( [ 'tipovacka-match' ], function( TipovackaMatch ) {
 			var player = origin.score[0];
 			var opponent = origin.score[1];
 
-			console.log( origin );
+			//console.log( origin );
 
 			return ( null === 0 ) ? false : (function() {
 				points = that.calculatePoints( player, opponent, chkbox );
@@ -91,7 +89,7 @@ define( [ 'tipovacka-match' ], function( TipovackaMatch ) {
 					savedPoints = that.pointCount( origin.id, i );
 					target = origin.target[i].points;
 
-					console.log(that.calculatePoints( player, opponent, chkbox ), savedPoints);
+					// console.log(i, that.calculatePoints( player, opponent, chkbox ), savedPoints);
 
 					if ( points[i] === 2 ) {
 						origin.target[i].points -= 1;
