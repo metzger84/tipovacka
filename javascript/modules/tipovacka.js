@@ -4,12 +4,11 @@ define( [ 'data-tymy', 'data-matches', 'tipovacka-tables' ], function( dataTymy,
 	window.Ringier.Tipovacka = window.Ringier.Tipovacka || {};
 
 	var Tipovacka = function() {
-		Ringier.Tipovacka.DataModel = [];
+		Ringier.Tipovacka.DataModel = Ringier.Tipovacka.MatchPool = [];
 		this.data = dataTymy;
 		this.matches = dataMatches;
 		this.tip = $( '<div id="tipovacka"/>' );
 
-		console.log(this.matches);
 		this.init();
 	};
 

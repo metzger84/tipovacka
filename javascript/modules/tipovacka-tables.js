@@ -44,7 +44,7 @@ define( [ 'tipovacka-match' ], function( TipovackaMatch ) {
 			this.pool.push( e.message );
 		},
 
-		pointCount: function( id, points ) {
+		poolPointCount: function( id, points ) {
 			var that = this;
 
 			for ( var i = 0; i < this.pool.length; i++ ) {
@@ -73,40 +73,76 @@ define( [ 'tipovacka-match' ], function( TipovackaMatch ) {
 			return basePoint;
 		},
 
-		awardPoints: function( origin ) {
+		awardPoints: function( teams ) {
 			var points, savedPoints, target;
 			var that = this;
-			var chkbox = origin.chkbox;
-			var player = origin.score[0];
-			var opponent = origin.score[1];
-
-			//console.log( origin );
+			var chkbox = teams.chkbox;
+			var player = teams.score[0];
+			var opponent = teams.score[1];
 
 			return ( null === 0 ) ? false : (function() {
 				points = that.calculatePoints( player, opponent, chkbox );
 
 				for ( var i = 0; i < points.length; i++ ) {
-					savedPoints = that.pointCount( origin.id, i );
-					target = origin.target[i].points;
-
-					// console.log(i, that.calculatePoints( player, opponent, chkbox ), savedPoints);
+					savedPoints = that.poolPointCount( teams.id, i );
+					target = teams.target[i].points;
 
 					if ( points[i] === 2 ) {
-						origin.target[i].points -= 1;
+						teams.target[i].points -= 1;
 					} else if ( points[i] === 3 && savedPoints === 2 ) {
-						origin.target[i].points += 1;
+						teams.target[i].points += 1;
 					} else {
 						if ( points[i] > savedPoints ) {
-							origin.target[i].points += points[i];
+							teams.target[i].points += points[i];
 						}
 						if ( points[i] < savedPoints ) {
-							origin.target[i].points -= savedPoints;
+							teams.target[i].points -= savedPoints;
 						}
 					}
 				}
-				that.pointCount( origin.id, points );
-				//that.awardScore( player, opponent );
+				that.poolPointCount( teams.id, points );
+				that.awardScore( teams );
 			})();
+		},
+
+		awardScore: function( teams ) {
+			var give, get;
+			this.teamsId = this.teamsId || teams.id;
+			this.cache = {};
+
+			for ( var i = 0; i < this.pool.length; i++ ) {
+				for ( var j = 0; j < 2; j++ ) {
+					if ( j % 2 ) {
+						give = 1; get = 0;
+					} else {
+						give = 0; get = 1;
+					}
+					this.addScoreToCache( this.pool[i].target[j].code, this.pool[i].score[give], this.pool[i].score[get] );
+				}
+			}
+			this.updateScoreFromCache();
+		},
+
+		addScoreToCache: function( target, give, get ) {
+			if ( !this.cache[ target ] ) {
+				this.cache[ target ] = [ give, get ];
+			} else {
+				this.cache[ target ][0] += give;
+				this.cache[ target ][1] += get;
+			}
+		},
+
+		updateScoreFromCache: function() {
+			console.log('start', this.cache, this.data );
+			for ( var prop in this.cache ) {
+				for ( var i = 0; i < this.data.length; i++ ) {
+					if ( this.data[i].code == prop ) {
+						console.log(true, this.data[i], this.cache[prop]);
+						this.data[i].score.give = this.cache[ prop ][0];
+						this.data[i].score.get = this.cache[ prop ][1];
+					}
+				}
+			}
 		},
 
 		renderTable: function() {
