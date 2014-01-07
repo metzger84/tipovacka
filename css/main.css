@@ -1,0 +1,59 @@
+body {
+  background: #fffcfc;
+  color: #444444;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+label {
+  display: block;
+  font-size: 12px;
+}
+table {
+  text-align: left;
+}
+.data-container {
+  display: inline-block;
+  float: left;
+  margin: 15px 30px;
+}
+.match {
+  margin: 15px 0;
+  padding: 15px 0;
+  position: relative;
+  border: 1px solid #eeeeee;
+}
+.match button {
+  display: inline-block;
+  position: absolute;
+  width: 25px;
+  margin: 5px;
+  text-align: center;
+}
+.match button.btn-0,
+.match button.btn-1 {
+  left: 30px;
+}
+.match button.btn-2,
+.match button.btn-3 {
+  right: 30px;
+}
+.match button.btn-0,
+.match button.btn-2 {
+  top: 40px;
+}
+.match button.btn-1,
+.match button.btn-3 {
+  top: 60px;
+}
+.match p {
+  margin: 10px 0 0;
+}
+.match .score {
+  display: block;
+  padding: 15px 0 15px;
+  vertical-align: middle;
+  font-size: 30px;
+  text-align: center;
+}
+#tipovacka {
+  text-align: center;
+}
